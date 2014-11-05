@@ -1,0 +1,9 @@
+[submodule "qabel-core"]
+	path = qabel-core
+	url = https://github.com/Qabel/qabel-core
+[submodule "qabel-desktop"]
+	path = qabel-desktop
+	url = https://github.com/Qabel/qabel-desktop
+[submodule "qabel-helloworld-module"]
+	path = qabel-helloworld-module
+	url = https://github.com/Qabel/qabel-helloworld-module
