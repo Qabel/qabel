@@ -7,3 +7,6 @@
 [submodule "qabel-helloworld-module"]
 	path = qabel-helloworld-module
 	url = https://github.com/Qabel/qabel-helloworld-module
+[submodule "qabel-file-module"]
+	path = qabel-file-module
+	url = git@github.com:Qabel/qabel-file-module.git
