@@ -17,5 +17,5 @@ include 'services:webservice'
 */
 
 rootProject.name = 'qabel'
-include ':qabel-core', ':qabel-desktop', ':qabel-helloworld-module'
+include ':qabel-core', ':qabel-desktop', ':qabel-helloworld-module', ':ackack'
 
