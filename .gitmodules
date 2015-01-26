@@ -10,3 +10,9 @@
 [submodule "ackack"]
 	path = ackack
 	url = https://github.com/Qabel/ackack.git
+[submodule "qabel-drop"]
+	path = qabel-drop
+	url = https://github.com/Qabel/qabel-drop.git
+[submodule "qabel-storage"]
+	path = qabel-storage
+	url = https://github.com/Qabel/qabel-storage.git
