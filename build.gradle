@@ -32,12 +32,12 @@ task startDropServer(type: ExecWait) {
 	directory './qabel-drop/'
 }
 
-task startDropStorage(type: ExecWait) {
+task startStorageServer(type: ExecWait) {
 	command 'node app.js &'
 	ready 'Storage server running.'
 	directory './qabel-storage/'
 }
 
 test {
-	dependsOn startDropServer, startDropStorage
+	dependsOn startDropServer, startStorageServer
 }
