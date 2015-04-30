@@ -32,11 +32,31 @@ task startDropServer(type: ExecWait) {
 	directory './qabel-drop/'
 }
 
+task getNodeModules(type: ExecWait) {
+	command 'npm install'
+	ready 'Storage server modules initialised.'
+	directory './qabel-storage/'
+}
+
+task checkStorage {
+	File dataFolder = new File("./qabel-storage/data/");
+	if( !dataFolder.exists() ) {
+		dataFolder.mkdirs();
+	}
+	File nodeModulesFolder = new File("./qabel-storage/node_modules/");
+	if( !nodeModulesFolder.exists() ) {
+		getNodeModules.execute()
+	}
+}
+
 task startStorageServer(type: ExecWait) {
+	dependsOn checkStorage	
 	command 'node app.js &'
 	ready 'Storage server running.'
 	directory './qabel-storage/'
 }
+
+
 
 test {
 	dependsOn startDropServer, startStorageServer
