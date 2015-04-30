@@ -7,3 +7,37 @@ repositories {
 
 dependencies {
 }
+
+class ExecWait extends DefaultTask {
+	String command
+	String ready
+	String directory
+
+	@TaskAction
+	def spawnProcess() {
+
+		ProcessBuilder builder = new ProcessBuilder(command.split(' '))
+		builder.redirectErrorStream(true)
+		builder.directory(new File(directory))
+		Process process = builder.start()
+
+		InputStream stdout = process.getInputStream()
+		BufferedReader reader = new BufferedReader(new InputStreamReader(stdout))
+	}
+}
+
+task startDropServer(type: ExecWait) {
+	command './drop_server.py &'
+	ready 'Drop server running.'
+	directory './qabel-drop/'
+}
+
+task startDropStorage(type: ExecWait) {
+	command 'node app.js &'
+	ready 'Storage server running.'
+	directory './qabel-storage/'
+}
+
+test {
+	dependsOn startDropServer, startDropStorage
+}
