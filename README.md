@@ -15,6 +15,10 @@ Gradle superproject for all Qabel projects.
 0. npm
 
 0. python moduls from qabel-drop/requirements.txt
+   ```
+   this could for example automaticly be done using python-pip:
+      pip install -r qabel-drop/requirements.txt
+   ```
 
 ## building source
 
@@ -33,3 +37,26 @@ Gradle superproject for all Qabel projects.
    ./gradlew build
    ```
 
+## starting the Servers
+Normaly the drop and storage server should be started automaticaly, but if you would like to start the servers manually you need to do the following steps
+
+0. dropserver
+   ```
+   linux:
+     ./qabel-drop/drop_server.py
+  
+   windows:
+     python ./qabel-drop/drop_server.py
+   ```
+0. storage-server
+   ```
+   cd qabel-storage
+   npm install
+   
+   linux:
+      nodejs app.js
+
+   windows
+      node app.js
+   ```
+   

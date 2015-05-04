@@ -51,7 +51,7 @@ task checkStorage {
 
 task startStorageServer(type: ExecWait) {
 	dependsOn checkStorage	
-	command 'node app.js &'
+	command 'nodejs app.js &'
 	ready 'Storage server running.'
 	directory './qabel-storage/'
 }
