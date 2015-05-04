@@ -56,8 +56,6 @@ task startStorageServer(type: ExecWait) {
 	directory './qabel-storage/'
 }
 
-
-
 test {
 	dependsOn startDropServer, startStorageServer
 }
