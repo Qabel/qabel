@@ -19,6 +19,8 @@ class ExecWait extends DefaultTask {
 		ProcessBuilder builder = new ProcessBuilder(command.split(' '))
 		builder.redirectErrorStream(true)
 		builder.directory(new File(directory))
+		builder.redirectOutput(new File("./log/"+directory+".log"));
+
 		Process process = builder.start()
 
 		InputStream stdout = process.getInputStream()
@@ -26,16 +28,31 @@ class ExecWait extends DefaultTask {
 	}
 }
 
+task killAllTestProcesses {
+    def ports = [6000, 8000]
+ 
+    ports.each { port ->
+        def cmd = "lsof -Fp -i :$port"
+        def process = cmd.execute()
+        process.in.eachLine { line ->
+        	def command = "kill -9 "+line.substring(1)
+        	def killProcess = command.execute()
+            killProcess.waitFor()
+        }
+    }
+}
+
+
 task startDropServer(type: ExecWait) {
-	command './drop_server.py &'
+	command 'python drop_server.py &'
 	ready 'Drop server running.'
-	directory './qabel-drop/'
+	directory './qabel-drop'
 }
 
 task getNodeModules(type: ExecWait) {
 	command 'npm install'
 	ready 'Storage server modules initialised.'
-	directory './qabel-storage/'
+	directory './qabel-storage'
 }
 
 task checkStorage {
@@ -53,12 +70,44 @@ task startStorageServer(type: ExecWait) {
 	dependsOn checkStorage	
 	command 'nodejs app.js &'
 	ready 'Storage server running.'
-	directory './qabel-storage/'
+	directory './qabel-storage'
 }
 
-test {
-	dependsOn startDropServer, startStorageServer
+task startServers {
+	File logFolder = new File("./log/");
+	if( !logFolder.exists() ) {
+		logFolder.mkdirs();
+	}
+	startDropServer.execute()
+	startStorageServer.execute()
 }
+
+gradle.addListener new TestLifecycleListener()
+ 
+class TestLifecycleListener implements TaskExecutionListener {
+
+    @Override
+    void beforeExecute(Task task) {
+        if (task.name == 'test') {
+              task.project.rootProject.startServers.execute();
+        }
+    }
+ 
+    @Override
+    void afterExecute(Task task, TaskState taskState) {
+        if (task.name == 'test') {
+           task.project.rootProject.killAllTestProcesses.execute()
+        }
+    }
+}
+
+
+
+
+test {
+
+}
+
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.2.1'
