@@ -12,6 +12,7 @@ class ExecWait extends DefaultTask {
 	String command
 	String ready
 	String directory
+	String logname
 
 	@TaskAction
 	def spawnProcess() {
@@ -19,7 +20,7 @@ class ExecWait extends DefaultTask {
 		ProcessBuilder builder = new ProcessBuilder(command.split(' '))
 		builder.redirectErrorStream(true)
 		builder.directory(new File(directory))
-		builder.redirectOutput(new File("./log/"+directory+".log"));
+		builder.redirectOutput(new File("./log/"+logname+".log"));
 
 		Process process = builder.start()
 
@@ -47,12 +48,14 @@ task startDropServer(type: ExecWait) {
 	command 'python drop_server.py &'
 	ready 'Drop server running.'
 	directory './qabel-drop'
+	logname 'qabel-drop'
 }
 
 task getNodeModules(type: ExecWait) {
 	command 'npm install'
 	ready 'Storage server modules initialised.'
 	directory './qabel-storage'
+	logname 'npm'
 }
 
 task checkStorage {
@@ -71,6 +74,7 @@ task startStorageServer(type: ExecWait) {
 	command 'nodejs app.js &'
 	ready 'Storage server running.'
 	directory './qabel-storage'
+	logname 'qabel-storage'
 }
 
 task startServers {
