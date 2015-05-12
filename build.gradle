@@ -61,50 +61,51 @@ task killAllTestProcesses {
     }
 }
 
-
-task startDropServer(type: ExecWait) {
-	command 'python drop_server.py &'
-	ready 'Drop server running.'
-	directory 'qabel-drop'
-	logname 'qabel-drop'
+task checkLogFolder {
+	File logFolder = new File("./log/")
+	if( !logFolder.exists() ) {
+		logFolder.mkdirs()
+	}
 }
 
 task getNodeModules(type: ExecWait) {
 	command 'npm install'
 	ready 'Storage server modules initialised.'
-	directory 'qabel-storage'
+	directory './qabel-storage'
 	logname 'npm'
 	waitfor true
 }
 
-task getNodeModule << {
-	
-}
-
 task checkStorage {
-	File dataFolder = new File("./qabel-storage/data/");
-	if( !dataFolder.exists() ) {
-		dataFolder.mkdirs();
+	dependsOn 'checkLogFolder'
+	File storagedataFolder = new File("./qabel-storage/data/")
+	if( !storagedataFolder.exists() ) {
+		storagedataFolder.mkdirs()
 	}
-	File nodeModulesFolder = new File("./qabel-storage/node_modules/");
+
+	File nodeModulesFolder = new File("./qabel-storage/node_modules/")
 	if( !nodeModulesFolder.exists() ) {
 		getNodeModules.execute()
 	}
 }
 
 task startStorageServer(type: ExecWait) {
-	dependsOn 'checkStorage'	
+	dependsOn 'checkStorage'
 	command 'nodejs app.js &'
 	ready 'Storage server running.'
-	directory './qabel-storage'
+	directory 'qabel-storage'
 	logname 'qabel-storage'
 }
 
+task startDropServer(type: ExecWait) {
+	dependsOn 'checkLogFolder'
+	command 'python drop_server.py &'
+	ready 'Drop server running.'
+	directory 'qabel-drop'
+	logname 'qabel-drop'
+}
+
 task startServers {
-	File logFolder = new File("./log/");
-	if( !logFolder.exists() ) {
-		logFolder.mkdirs();
-	}
 	startDropServer.execute()
 	startStorageServer.execute()
 }
@@ -116,6 +117,7 @@ class TestLifecycleListener implements TaskExecutionListener {
     @Override
     void beforeExecute(Task task) {
         if (task.name == 'test') {
+	        
               task.project.rootProject.startServers.execute();
         }
     }
