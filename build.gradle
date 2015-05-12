@@ -89,9 +89,21 @@ task checkStorage {
 	}
 }
 
-task startStorageServer(type: ExecWait) {
+task startStorageServerUnix(type: ExecWait) {
 	dependsOn 'checkStorage'
-	command 'nodejs app.js &'
+	def cmd = "./node.sh"
+	def process = cmd.execute()
+	process.in.eachLine { line ->
+		command line+' app.js &'
+	}
+	ready 'Storage server running.'
+	directory 'qabel-storage/'
+	logname 'qabel-storage'
+}
+
+task startStorageServerWindows(type: ExecWait) {
+	dependsOn 'checkStorage'
+	command 'node app.js &'
 	ready 'Storage server running.'
 	directory 'qabel-storage'
 	logname 'qabel-storage'
@@ -106,8 +118,15 @@ task startDropServer(type: ExecWait) {
 }
 
 task startServers {
+	def Platform = "${System.properties['os.name'].toLowerCase()}" 
+
 	startDropServer.execute()
-	startStorageServer.execute()
+	if (Platform.contains('windows')){
+		startStorageServerWindows.execute()
+	}
+	else {
+		startStorageServerUnix.execute()
+	}
 }
 
 gradle.addListener new TestLifecycleListener()
