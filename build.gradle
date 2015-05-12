@@ -13,6 +13,8 @@ class ExecWait extends DefaultTask {
 	String ready
 	String directory
 	String logname
+	Process process
+	boolean waitfor
 
 	@TaskAction
 	def spawnProcess() {
@@ -20,26 +22,42 @@ class ExecWait extends DefaultTask {
 		ProcessBuilder builder = new ProcessBuilder(command.split(' '))
 		builder.redirectErrorStream(true)
 		builder.directory(new File(directory))
-		builder.redirectOutput(new File("./log/"+logname+".log"));
+		builder.redirectOutput(new File("./log/"+logname+".log"))
 
-		Process process = builder.start()
+		process = builder.start()
 
 		InputStream stdout = process.getInputStream()
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stdout))
+
+		if(process != null && waitfor==true)
+			process.waitFor()
 	}
 }
 
 task killAllTestProcesses {
+    def Platform = "${System.properties['os.name'].toLowerCase()}" 
+    
     def ports = [6000, 8000]
- 
     ports.each { port ->
-        def cmd = "lsof -Fp -i :$port"
-        def process = cmd.execute()
-        process.in.eachLine { line ->
-        	def command = "kill -9 "+line.substring(1)
-        	def killProcess = command.execute()
-            killProcess.waitFor()
-        }
+     	if (Platform.contains('linux')){
+	        def cmd = "lsof -Fp -i :$port"
+	        def process = cmd.execute()
+	        process.in.eachLine { line ->
+	        	def command = "kill -9 "+line.substring(1)
+	        	def killProcess = command.execute()
+	            killProcess.waitFor()
+	        }
+	    }
+	    else if(Platform.contains('windows')) {
+	        def cmd = "netstat -a -o -n | findstr \"TCP\" | findstr \":$port\""
+	        def process = cmd.execute()
+	        process.in.eachLine { line ->
+	        	def command = "taskkill /F /PID  "+line.split('+ ')[4]
+	        	def killProcess = command.execute()
+	            killProcess.waitFor()
+	        }
+	    }
+
     }
 }
 
@@ -47,15 +65,20 @@ task killAllTestProcesses {
 task startDropServer(type: ExecWait) {
 	command 'python drop_server.py &'
 	ready 'Drop server running.'
-	directory './qabel-drop'
+	directory 'qabel-drop'
 	logname 'qabel-drop'
 }
 
 task getNodeModules(type: ExecWait) {
 	command 'npm install'
 	ready 'Storage server modules initialised.'
-	directory './qabel-storage'
+	directory 'qabel-storage'
 	logname 'npm'
+	waitfor true
+}
+
+task getNodeModule << {
+	
 }
 
 task checkStorage {
@@ -70,7 +93,7 @@ task checkStorage {
 }
 
 task startStorageServer(type: ExecWait) {
-	dependsOn checkStorage	
+	dependsOn 'checkStorage'	
 	command 'nodejs app.js &'
 	ready 'Storage server running.'
 	directory './qabel-storage'
