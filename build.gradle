@@ -167,14 +167,6 @@ class TestLifecycleListener implements TaskExecutionListener {
     }
 }
 
-
-
-
-test {
-
-}
-
-
 task wrapper(type: Wrapper) {
     gradleVersion = '2.2.1'
 }
