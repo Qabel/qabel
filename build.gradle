@@ -109,7 +109,19 @@ task startStorageServerWindows(type: ExecWait) {
 	logname 'qabel-storage'
 }
 
-task startDropServer(type: ExecWait) {
+task startDropServerUnix(type: ExecWait) {
+	dependsOn 'checkLogFolder'
+	def cmd = "./drop.sh"
+	def process = cmd.execute()
+	process.in.eachLine { line ->
+		command line+' drop_server.py &'
+	}
+	ready 'Drop server running.'
+	directory 'qabel-drop'
+	logname 'qabel-drop'
+}
+
+task startDropServerWindows(type: ExecWait) {
 	dependsOn 'checkLogFolder'
 	command 'python drop_server.py &'
 	ready 'Drop server running.'
@@ -120,7 +132,13 @@ task startDropServer(type: ExecWait) {
 task startServers {
 	def Platform = "${System.properties['os.name'].toLowerCase()}" 
 
-	startDropServer.execute()
+	if (Platform.contains('windows')){
+		startDropServerWindows.execute()
+	}
+	else {
+		startDropServerUnix.execute()
+	}
+
 	if (Platform.contains('windows')){
 		startStorageServerWindows.execute()
 	}
@@ -148,14 +166,6 @@ class TestLifecycleListener implements TaskExecutionListener {
         }
     }
 }
-
-
-
-
-test {
-
-}
-
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.2.1'

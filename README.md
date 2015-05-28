@@ -20,6 +20,8 @@ Gradle superproject for all Qabel projects.
       pip install -r qabel-drop/requirements.txt
    ```
 
+0. lsof (Linux only)
+
 ## building source
 
 0. Make sure you have a working [git client](http://git-scm.com/) installed
