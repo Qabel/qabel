@@ -34,34 +34,36 @@ class ExecWait extends DefaultTask {
 	}
 }
 
-task killAllTestProcesses {
-    def Platform = "${System.properties['os.name'].toLowerCase()}" 
-    
-    def ports = [6000, 8000]
-    ports.each { port ->
-     	if (Platform.contains('linux')){
-	        def cmd = "lsof -Fp -i :$port"
-	        def process = cmd.execute()
-	        process.in.eachLine { line ->
-	        	def command = "kill -9 "+line.substring(1)
-	        	def killProcess = command.execute()
-	            killProcess.waitFor()
-	        }
+2.times { counter ->
+    task "killAllTestProcesses$counter" <<{
+	    def Platform = "${System.properties['os.name'].toLowerCase()}" 
+	    
+	    def ports = [6000, 8000]
+	    ports.each { port ->
+	     	if (Platform.contains('linux')){
+		        def cmd = "lsof -Fp -i :$port"
+		        def process = cmd.execute()
+		        process.in.eachLine { line ->
+		        	def command = "kill -9 "+line.substring(1)
+		        	def killProcess = command.execute()
+		            killProcess.waitFor()
+		        }
+		        
+		    }
+		    else if(Platform.contains('windows')) {
+		        def cmd = "netstat -a -o -n | findstr \"TCP\" | findstr \":$port\""
+		        def process = cmd.execute()
+		        process.in.eachLine { line ->
+		        	def command = "taskkill /F /PID  "+line.split('+ ')[4]
+		        	def killProcess = command.execute()
+		            killProcess.waitFor()
+		        }
+		    }
 	    }
-	    else if(Platform.contains('windows')) {
-	        def cmd = "netstat -a -o -n | findstr \"TCP\" | findstr \":$port\""
-	        def process = cmd.execute()
-	        process.in.eachLine { line ->
-	        	def command = "taskkill /F /PID  "+line.split('+ ')[4]
-	        	def killProcess = command.execute()
-	            killProcess.waitFor()
-	        }
-	    }
-
-    }
+	}
 }
 
-task checkLogFolder {
+task checkLogFolder << {
 	File logFolder = new File("./log/")
 	if( !logFolder.exists() ) {
 		logFolder.mkdirs()
@@ -78,6 +80,9 @@ task getNodeModules(type: ExecWait) {
 
 task checkStorage {
 	dependsOn 'checkLogFolder'
+}
+
+checkStorage << {
 	File storagedataFolder = new File("./qabel-storage/data/")
 	if( !storagedataFolder.exists() ) {
 		storagedataFolder.mkdirs()
@@ -88,6 +93,7 @@ task checkStorage {
 		getNodeModules.execute()
 	}
 }
+
 
 task startStorageServerUnix(type: ExecWait) {
 	dependsOn 'checkStorage'
@@ -129,42 +135,29 @@ task startDropServerWindows(type: ExecWait) {
 	logname 'qabel-drop'
 }
 
-task startServers {
+task startServers{
+	dependsOn 'checkLogFolder'
+	dependsOn 'checkStorage'
+}
+
+startServers << {
 	def Platform = "${System.properties['os.name'].toLowerCase()}" 
+	killAllTestProcesses0.execute()
 
 	if (Platform.contains('windows')){
 		startDropServerWindows.execute()
-	}
-	else {
-		startDropServerUnix.execute()
-	}
-
-	if (Platform.contains('windows')){
 		startStorageServerWindows.execute()
 	}
 	else {
+		startDropServerUnix.execute()
 		startStorageServerUnix.execute()
 	}
 }
 
-gradle.addListener new TestLifecycleListener()
- 
-class TestLifecycleListener implements TaskExecutionListener {
-
-    @Override
-    void beforeExecute(Task task) {
-        if (task.name == 'test') {
-	        
-              task.project.rootProject.startServers.execute();
-        }
-    }
- 
-    @Override
-    void afterExecute(Task task, TaskState taskState) {
-        if (task.name == 'test') {
-           task.project.rootProject.killAllTestProcesses.execute()
-        }
-    }
+subprojects {
+	apply plugin: 'java'
+	test.dependsOn(parent.startServers)
+	test.finalizedBy(parent.killAllTestProcesses1)
 }
 
 task wrapper(type: Wrapper) {
