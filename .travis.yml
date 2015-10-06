@@ -1,10 +1,5 @@
 sudo: false
 
-language: java
-
-jdk:
- - oraclejdk7
-
 language: python
 
 python:
