@@ -1,15 +1,19 @@
-language: java
+sudo: false
 
-jdk:
- - oraclejdk7
+language: python
+
+python:
+ - "2.7"
+
+cache: pip
 
 notifications:
   email: false
 
+services:
+  - redis-server
+
 install:
- - redis-server > /dev/null 2>&1 &
- - sudo apt-get install python-pip npm nodejs
- - sudo pip install virtualenv
  - virtualenv qabel-drop
  - source qabel-drop/bin/activate
  - pip install -r qabel-drop/requirements.txt
