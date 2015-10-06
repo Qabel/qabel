@@ -16,10 +16,25 @@ Gradle superproject for all Qabel projects.
 
 0. npm
 
+0. python3.4
+
 0. python moduls from qabel-drop/requirements.txt
    ```
    this could for example automaticly be done using python-pip:
       pip install -r qabel-drop/requirements.txt
+   ```
+
+0. python modules from qabel-accounting/requirements.txt
+   ```
+   virtualenv --python=python3.4 qabel-accounting
+   source qabel-accounting/bin/activate
+   pip install -r qabel-drop/requirements.txt
+   ```
+
+0. migrations for qabel-accounting
+   ```
+   cd qabel-accounting
+   ./manage.py migrate
    ```
 
 0. lsof (Linux only)
@@ -62,5 +77,11 @@ Normaly the drop and storage server should be started automaticaly, but if you w
 
    windows
       node app.js
+   ```
+
+0. accounting-server
+   ```
+   cd qabel-accounting
+   bin/python3.4 manage.py runserver
    ```
    

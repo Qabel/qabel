@@ -15,6 +15,7 @@ services:
 
 install:
  - pip install -r qabel-drop/requirements.txt
+ - pip install -r qabel-accounting/requirements.txt
 
 script:
  - ./gradlew check

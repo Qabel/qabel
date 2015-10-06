@@ -16,3 +16,6 @@
 [submodule "qabel-storage"]
 	path = qabel-storage
 	url = https://github.com/Qabel/qabel-storage.git
+[submodule "qabel-accounting"]
+	path = qabel-accounting
+	url = https://github.com/Qabel/qabel-accounting
