@@ -4,6 +4,8 @@ For the documentation take a look at the [wiki](https://github.com/Qabel/qabel-d
 qabel
 =====
 
+[![Build Status](https://travis-ci.org/Qabel/qabel.svg?branch=master)](https://travis-ci.org/Qabel/qabel)
+
 Gradle superproject for all Qabel projects.
 
 ## requirements
