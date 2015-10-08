@@ -14,9 +14,7 @@ services:
   - redis-server
 
 install:
- - virtualenv qabel-drop
- - source qabel-drop/bin/activate
  - pip install -r qabel-drop/requirements.txt
 
 script:
- - travis_wait ./gradlew check
+ - ./gradlew check
