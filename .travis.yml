@@ -17,4 +17,4 @@ install:
  - pip install -r qabel-drop/requirements.txt
 
 script:
- - travis_wait ./gradlew check
+ - ./gradlew check
