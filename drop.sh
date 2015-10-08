@@ -1,2 +1,2 @@
 #!/bin/sh
-command -v python2 || command -v python
+command -v python3 || command -v python
