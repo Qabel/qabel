@@ -8,6 +8,9 @@ qabel
 
 Gradle superproject for all Qabel projects.
 
+To use the accounting server, you need to configure an AWS account as shown in the
+[Boto 3 documentation](https://boto3.readthedocs.org/en/latest/guide/quickstart.html#configuration).
+
 ## requirements
 
 0. redis-server
