@@ -135,6 +135,21 @@ task startDropServerWindows(type: ExecWait) {
 	logname 'qabel-drop'
 }
 
+task startAccountingServerUnix(type: ExecWait) {
+	dependsOn 'checkLogFolder'
+	command 'python3.4 manage.py testserver testdata.json --addrport 9696'
+	ready 'Accounting server running.'
+	directory 'qabel-accounting'
+	logname 'qabel-accounting'
+}
+
+task startAccountingServerWindows(type: ExecWait) {
+	dependsOn 'checkLogFolder'
+	command 'python3.4 manage.py testserver testdata.json --addrport 9696'
+	ready 'Accounting server running.'
+	directory 'qabel-accounting'
+	logname 'qabel-accounting'
+}
 task startServers{
 	dependsOn 'checkLogFolder'
 	dependsOn 'checkStorage'
@@ -147,10 +162,12 @@ startServers << {
 	if (Platform.contains('windows')){
 		startDropServerWindows.execute()
 		startStorageServerWindows.execute()
+		startAccountingServerWindows.execute()
 	}
 	else {
 		startDropServerUnix.execute()
 		startStorageServerUnix.execute()
+		startAccountingServerUnix.execute()
 	}
 }
 
