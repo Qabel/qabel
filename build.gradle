@@ -137,7 +137,7 @@ task startDropServerWindows(type: ExecWait) {
 
 task startAccountingServerUnix(type: ExecWait) {
 	dependsOn 'checkLogFolder'
-	command 'python3.4 manage.py runserver 8080'
+	command 'python3.4 manage.py testserver testdata.json --addrport 9696'
 	ready 'Accounting server running.'
 	directory 'qabel-accounting'
 	logname 'qabel-accounting'
@@ -145,7 +145,7 @@ task startAccountingServerUnix(type: ExecWait) {
 
 task startAccountingServerWindows(type: ExecWait) {
 	dependsOn 'checkLogFolder'
-	command 'python3.4 manage.py runserver 8080'
+	command 'python3.4 manage.py testserver testdata.json --addrport 9696'
 	ready 'Accounting server running.'
 	directory 'qabel-accounting'
 	logname 'qabel-accounting'
