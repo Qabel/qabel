@@ -70,50 +70,6 @@ task checkLogFolder << {
 	}
 }
 
-task getNodeModules(type: ExecWait) {
-	command 'npm install'
-	ready 'Storage server modules initialised.'
-	directory './qabel-storage'
-	logname 'npm'
-	waitfor true
-}
-
-task checkStorage {
-	dependsOn 'checkLogFolder'
-}
-
-checkStorage << {
-	File storagedataFolder = new File("./qabel-storage/data/")
-	if( !storagedataFolder.exists() ) {
-		storagedataFolder.mkdirs()
-	}
-
-	File nodeModulesFolder = new File("./qabel-storage/node_modules/")
-	if( !nodeModulesFolder.exists() ) {
-		getNodeModules.execute()
-	}
-}
-
-
-task startStorageServerUnix(type: ExecWait) {
-	dependsOn 'checkStorage'
-	def cmd = "./node.sh"
-	def process = cmd.execute()
-	process.in.eachLine { line ->
-		command line+' app.js &'
-	}
-	ready 'Storage server running.'
-	directory 'qabel-storage/'
-	logname 'qabel-storage'
-}
-
-task startStorageServerWindows(type: ExecWait) {
-	dependsOn 'checkStorage'
-	command 'node app.js &'
-	ready 'Storage server running.'
-	directory 'qabel-storage'
-	logname 'qabel-storage'
-}
 
 task startDropServerUnix(type: ExecWait) {
 	dependsOn 'checkLogFolder'
@@ -152,7 +108,6 @@ task startAccountingServerWindows(type: ExecWait) {
 }
 task startServers{
 	dependsOn 'checkLogFolder'
-	dependsOn 'checkStorage'
 }
 
 startServers << {
@@ -161,12 +116,10 @@ startServers << {
 
 	if (Platform.contains('windows')){
 		startDropServerWindows.execute()
-		startStorageServerWindows.execute()
 		startAccountingServerWindows.execute()
 	}
 	else {
 		startDropServerUnix.execute()
-		startStorageServerUnix.execute()
 		startAccountingServerUnix.execute()
 	}
 }

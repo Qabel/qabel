@@ -15,10 +15,6 @@ To use the accounting server, you need to configure an AWS account as shown in t
 
 0. redis-server
 
-0. nodejs
-
-0. npm
-
 0. python3.4
 
 0. python moduls from qabel-drop/requirements.txt
@@ -69,17 +65,6 @@ Normaly the drop and storage server should be started automaticaly, but if you w
   
    windows:
      python ./qabel-drop/drop_server.py
-   ```
-0. storage-server
-   ```
-   cd qabel-storage
-   npm install
-   
-   linux:
-      nodejs app.js
-
-   windows
-      node app.js
    ```
 
 0. accounting-server
