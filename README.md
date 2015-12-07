@@ -13,9 +13,9 @@ To use the accounting server, you need to configure an AWS account as shown in t
 
 ## requirements
 
-0. redis-server
+0. postgres 9.4
 
-0. python3.4
+0. python3.4 and python3.4-dev
 
 0. python moduls from qabel-drop/requirements.txt
    ```
