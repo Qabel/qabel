@@ -3,6 +3,7 @@ For the documentation take a look at the [wiki](https://github.com/Qabel/qabel-d
 
 qabel
 =====
+This repo is outdated and not used any more, see our [android](https://github.com/Qabel/qabel-android) and [desktop](https://github.com/Qabel/qabel-desktop) repo.
 
 [![Build Status](https://travis-ci.org/Qabel/qabel.svg?branch=master)](https://travis-ci.org/Qabel/qabel)
 
